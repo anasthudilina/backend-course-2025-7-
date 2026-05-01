@@ -1,0 +1,206 @@
+openapi: 3.0.0
+info:
+  title: Inventory API
+  version: 1.0.0
+  description: |
+    API для системи інвентаризації (Лабораторна робота №6).
+    Реалізовано згідно з технічним завданням.
+
+tags:
+  - name: Registration
+    description: Реєстрація пристроїв та форми
+  - name: Inventory
+    description: Робота зі списком інвентарю
+  - name: Photos
+    description: Керування зображеннями
+  - name: Search
+    description: Пошук за базою
+
+paths:
+  /RegisterForm.html:
+    get:
+      summary: Веб-форма для реєстрації пристрою
+      tags: [Registration]
+      responses:
+        '200':
+          description: OK (Повертає HTML сторінку)
+
+  /SearchForm.html:
+    get:
+      summary: Веб-форма для пошуку пристрою
+      tags: [Search]
+      responses:
+        '200':
+          description: OK (Повертає HTML сторінку)
+
+  /register:
+    post:
+      summary: Реєстрація нового пристрою
+      tags: [Registration]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                inventory_name:
+                  type: string
+                  description: Ім’я речі (обов'язково)
+                description:
+                  type: string
+                  description: Опис речі
+                photo:
+                  type: string
+                  format: binary
+                  description: Файл фото зображення
+      responses:
+        '201':
+          description: Created (Успішна реєстрація)
+        '400':
+          description: Bad Request (Якщо ім’я не задано)
+        '405':
+          description: Method not allowed
+
+  /inventory:
+    get:
+      summary: Отримання списку всіх інвентаризованих речей
+      tags: [Inventory]
+      responses:
+        '200':
+          description: JSON зі списком речей
+    post:
+      summary: Заборонений метод для перевірки 405
+      tags: [Inventory]
+      responses:
+        '405':
+          description: Method not allowed
+
+  /inventory/{id}:
+    get:
+      summary: Отримання інформації про конкретну річ
+      tags: [Inventory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Унікальний ідентифікатор речі
+          schema:
+            type: string
+      responses:
+        '200':
+          description: JSON з інформацією про річ
+        '404':
+          description: Not found (Річ не існує)
+    
+    put:
+      summary: Оновлення імені або опису конкретної речі
+      tags: [Inventory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                inventory_name:
+                  type: string
+                description:
+                  type: string
+      responses:
+        '200':
+          description: OK (Оновлено)
+        '404':
+          description: Not found
+    
+    delete:
+      summary: Видалення інвентаризованої речі зі списку
+      tags: [Inventory]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK (Видалено)
+        '404':
+          description: Not found
+
+  /inventory/{id}/photo:
+    get:
+      summary: Отримання фото зображення конкретної речі
+      tags: [Photos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK (Повертає image/jpeg)
+          content:
+            image/jpeg:
+              schema:
+                type: string
+                format: binary
+        '404':
+          description: Not found (Річ або фото не існує)
+    
+    put:
+      summary: Оновлення фото зображення конкретної речі
+      tags: [Photos]
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                photo:
+                  type: string
+                  format: binary
+      responses:
+        '200':
+          description: OK (Фото оновлено)
+        '404':
+          description: Not found
+
+  /search:
+    post:
+      summary: Обробка запиту пошуку пристрою за ID
+      tags: [Search]
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              properties:
+                id:
+                  type: string
+                  description: Серійний номер або ID
+                has_photo:
+                  type: string
+                  description: Прапорець для додавання посилання на фото (on/off)
+      responses:
+        '200':
+          description: Інформація про знайдену річ
+        '404':
+          description: Not Found
+        '405':
+          description: Method not allowed

@@ -1,0 +1,97 @@
+{
+	"info": {
+		"name": "Inventory Service - Lab 6",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Register Device",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{ "key": "inventory_name", "value": "Test Device", "type": "text" },
+						{ "key": "description", "value": "Description of device", "type": "text" },
+						{ "key": "photo", "type": "file", "src": "" }
+					]
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/register",
+					"protocol": "http",
+					"host": ["{{host}}"],
+					"port": "{{port}}",
+					"path": ["register"]
+				}
+			}
+		},
+		{
+			"name": "Get All Inventory",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:{{port}}/inventory",
+					"protocol": "http",
+					"host": ["{{host}}"],
+					"port": "{{port}}",
+					"path": ["inventory"]
+				}
+			}
+		},
+		{
+			"name": "Get Specific Item",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:{{port}}/inventory/REPLACE_WITH_ID",
+					"protocol": "http",
+					"host": ["{{host}}"],
+					"port": "{{port}}",
+					"path": ["inventory", "REPLACE_WITH_ID"]
+				}
+			}
+		},
+		{
+			"name": "Search Item",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{ "key": "id", "value": "REPLACE_WITH_ID", "type": "text" },
+						{ "key": "has_photo", "value": "on", "type": "text" }
+					]
+				},
+				"url": {
+					"raw": "http://{{host}}:{{port}}/search",
+					"protocol": "http",
+					"host": ["{{host}}"],
+					"port": "{{port}}",
+					"path": ["search"]
+				}
+			}
+		},
+		{
+			"name": "Delete Item",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "http://{{host}}:{{port}}/inventory/REPLACE_WITH_ID",
+					"protocol": "http",
+					"host": ["{{host}}"],
+					"port": "{{port}}",
+					"path": ["inventory", "REPLACE_WITH_ID"]
+				}
+			}
+		}
+	],
+	"variable": [
+		{ "key": "host", "value": "127.0.0.1" },
+		{ "key": "port", "value": "3000" }
+	]
+}
