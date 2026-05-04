@@ -13,6 +13,7 @@ services:
 
   app:
     build: .
+    working_dir: /app
     ports:
       - "${PORT}:${PORT}"
       - "9229:9229"

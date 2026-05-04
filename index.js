@@ -1,15 +1,14 @@
-require('dotenv').config(); // Завантаження змінних з .env
+require('dotenv').config(); 
 const express = require('express');
 const fileUpload = require('express-fileupload');
 const path = require('path');
 const swaggerUi = require('swagger-ui-express');
-const YAML = require('yamljs');
-const { Pool } = require('pg'); // Бібліотека для PostgreSQL
+const YAML = require('yamljs'); 
 
 const app = express();
+
 const swaggerDocument = YAML.load('./swagger.yaml');
 
-// Налаштування підключення до БД через змінні оточення
 const pool = new Pool({
     user: process.env.DB_USER,
     host: process.env.DB_HOST,
@@ -26,9 +25,9 @@ app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload());
 
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+
 app.use('/cache', express.static(cacheDir));
 
-// Роздача HTML-форм
 app.get('/RegisterForm.html', (req, res) => res.sendFile(path.join(__dirname, 'RegisterForm.html')));
 app.get('/SearchForm.html', (req, res) => res.sendFile(path.join(__dirname, 'SearchForm.html')));
 
@@ -54,7 +53,6 @@ app.post('/register', async (req, res) => {
         );
         
         const newItem = result.rows[0];
-        // Формуємо URL для відповіді
         newItem.photo_url = photoName ? `http://${req.hostname}:${PORT}/inventory/${newItem.id}/photo` : null;
         res.status(201).json(newItem);
     } catch (err) {
@@ -72,7 +70,7 @@ app.get('/inventory', async (req, res) => {
     }
 });
 
-// GET /inventory/:id/photo - Отримання фото з диска[cite: 1]
+// GET /inventory/:id/photo - Отримання фото з диска
 app.get('/inventory/:id/photo', async (req, res) => {
     try {
         const result = await pool.query('SELECT photo_path FROM inventory WHERE id = $1', [req.params.id]);
@@ -85,7 +83,7 @@ app.get('/inventory/:id/photo', async (req, res) => {
     }
 });
 
-// POST /search - Пошук у БД[cite: 1]
+// POST /search - Пошук у БД
 app.post('/search', async (req, res) => {
     const { id, has_photo } = req.body;
     try {
@@ -101,7 +99,7 @@ app.post('/search', async (req, res) => {
     }
 });
 
-// DELETE /inventory/:id - Видалення з БД[cite: 1]
+// DELETE /inventory/:id - Видалення з БД
 app.delete('/inventory/:id', async (req, res) => {
     try {
         const result = await pool.query('DELETE FROM inventory WHERE id = $1', [req.params.id]);
@@ -113,6 +111,7 @@ app.delete('/inventory/:id', async (req, res) => {
 });
 
 app.listen(PORT, () => {
-    console.log(`Сервер працює на порті: ${PORT}`);
-    console.log(`Для дебагу в Chrome відкрийте chrome://inspect[cite: 1]`);
+    console.log(`Сервер запущено: http://localhost:${PORT}`);
+    console.log(`Документація Swagger: http://localhost:${PORT}/docs`);
+    console.log(`Для дебагу відкрийте edge://inspect/#devices`);
 });
